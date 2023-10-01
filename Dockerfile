@@ -6,7 +6,7 @@ ADD . /projectapplication
 
 EXPOSE 8000
 
-COPY requirements.txt /app
+COPY requirements.txt /projectapplication/
 
 RUN pip3 install -r requirements.txt --no-cache-dir
 
