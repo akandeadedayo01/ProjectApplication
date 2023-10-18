@@ -7,6 +7,10 @@ environment_variables:
     DATABASE_DEFAULT_URL: sqlite:///db1.sqlite3
     DATABASE_STREAMDATA_URL: sqlite:///db2.sqlite3
     OPBEAT_ENABLED: False
+env:
+  secrets-manager:
+    DOCKERHUB_PASS: "arn:aws:secretsmanager:eu-west-1:447827107758:secret:docker_cred-XFW5lf:DOCKERHUB_PASS"
+    DOCKERHUB_USERNAME: "arn:aws:secretsmanager:eu-west-1:447827107758:secret:docker_cred-XFW5lf:DOCKERHUB_USERNAME"
 phases:
   install:
     runtime-versions:
