@@ -7,10 +7,7 @@ environment_variables:
     DATABASE_DEFAULT_URL: sqlite:///db1.sqlite3
     DATABASE_STREAMDATA_URL: sqlite:///db2.sqlite3
     OPBEAT_ENABLED: False
-phases:
-  install:
-    runtime-versions:
-      python: 3.11
+
   pre_build:
     commands:
       - echo Prebuild ops
@@ -31,6 +28,6 @@ phases:
       - Docker push $REPOSITORY_URI:$IMAGE_TAG
       - echo Writing image definitions file....
       - printf '{"ImageURI":"%s:%s"}' $REPOSITORY_URI $IMAGE_TAG > imageDetail.json
-  artifacts:
+artifacts:
     files:
       - imageDetail.json
