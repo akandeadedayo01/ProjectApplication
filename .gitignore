@@ -1,3 +1,4 @@
 .idea
 .venv
 info.log
+ec2instance.yml
