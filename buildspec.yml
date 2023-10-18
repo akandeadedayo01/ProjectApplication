@@ -17,8 +17,8 @@ phases:
       python: 3.11
   pre_build:
     commands:
-      - echo Prebuild ops
-      - pip3 install -r requirements.txt
+      - echo logging in to Dockerhub
+      - docker login --username $DOCKERHUB_USERNAME --password $DOCKERHUB_PASS
       - echo logging in to Amazon ECR....
       - aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 447827107758.dkr.ecr.eu-west-1.amazonaws.com
       - REPOSITORY_URI=447827107758.dkr.ecr.eu-west-1.amazonaws.com/projectapplication
