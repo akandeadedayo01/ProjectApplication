@@ -1,0 +1,166 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Create a CodePipeline to include CloudFormation Features, CodeBuild and Approval steps.
+
+
+Parameters:
+  ArtifactStoreS3Location:
+    Type: String
+    Description: Name of the S3 bucket to store CodePipeline artifact
+    Default: project-application01
+  ContainerPort:
+    Type: Number
+    Description: This is the ContainerPort
+    Default: 8000
+  GithubUserName:
+    Type: String
+    Default: appmigro01
+  GithubRepo:
+    Type: String
+    Description: This is the repository name
+    Default: ProjectApplication
+  GithubBranch:
+    Type: String
+    Description: Branch name for the repository
+    Default: ecs-fargate
+  GithubOauthToken:
+    Type: String
+    Description: OauthToken For repository
+
+
+
+Resources:
+  CodePipelineRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: !Sub CodePipelineRole-${AWS::StackName}
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "codepipeline.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AdministratorAccess"
+
+  CodeBuildRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: !Sub CodeBuildRole-${AWS::StackName}
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "codebuild.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AdministratorAccess"
+
+  CloudFormationRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: !Sub CloudFormationRole-${AWS::StackName}
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "cloudformation.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AdministratorAccess"
+
+  BuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Sub ${AWS::StackName}-Prod
+      Description: PA CodeBuildProject
+      ServiceRole: !GetAtt CodeBuildRole.Arn
+      Artifacts:
+        Type: CODEPIPELINE
+        OverrideArtifactName: True
+      Environment:
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:7.0
+        PrivilegedMode: true
+        ImagePullCredentialsType: CODEBUILD
+        Type: LINUX_CONTAINER
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: buildspec.yml
+
+  CodePipeline:
+    Type: "AWS::CodePipeline::Pipeline"
+    Properties:
+      ArtifactStore:
+        Location: !Ref ArtifactStoreS3Location
+        Type: S3
+      Name: !Sub ${AWS::StackName}-cp-Cfn
+      RestartExecutionOnUpdate: False
+      RoleArn: !GetAtt CodePipelineRole.Arn
+      Stages:
+        - Name: Source
+          Actions:
+            - Name: Source
+              ActionTypeId:
+                Category: Source
+                Owner: ThirdParty
+                Version: 1
+                Provider: GitHub
+              Configuration:
+                Branch: !Ref GithubBranch
+                Repo: !Ref GithubRepo
+                Owner: !Ref GithubUserName
+                OAuthToken: !Ref GithubOauthToken
+              RunOrder: 1
+              OutputArtifacts:
+                - Name: source-output-artifacts
+        - Name: Build
+          Actions:
+            - Name: Build
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              OutputArtifacts:
+                - Name: build-output-artifacts
+              InputArtifacts:
+                - Name: source-output-artifacts
+              Configuration:
+                ProjectName: !Ref BuildProject
+              RunOrder: 1
+        - Name: Deploy
+          Actions:
+            - Name: Deploy
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Version: 1
+                Provider: CloudFormation
+              InputArtifacts:
+                - Name: source-output-artifacts
+                - Name: build-output-artifacts
+              Configuration:
+                ActionMode: CREATE_UPDATE
+                Capabilities: CAPABILITY_NAMED_IAM
+                RoleArn: !GetAtt CloudFormationRole.Arn
+                StackName: Pay-Service-Prod
+                ParameterOverrides: !Sub |
+                  {
+                    "ImageUrl" :  { "Fn::GetParam" : ["build-output-artifacts", "imageDetail.json", "ImageURI"] },
+                    "ContainerPort": "${ContainerPort}"
+                  }
+
+                TemplatePath: source-output-artifacts::CFN-CICD/02-04-Fargate-ServiceStack-Create-ECSService.yml
+              RunOrder: 1
+
+
+

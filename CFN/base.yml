@@ -1,0 +1,25 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Create a CodePipeline to include CloudFormation Features, CodeBuild and Approval steps.
+
+Resources:
+  MyS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: project-application01
+
+  MyRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: "projectapplication"
+      ImageScanningConfiguration:
+        ScanOnPush: true
+
+Outputs:
+  ECRRepository:
+    Description: Name of repository
+    Value: !Ref MyRepository
+
+
+
+
+
