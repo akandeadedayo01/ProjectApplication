@@ -343,7 +343,7 @@ Resources:
     Properties:
       Name: PA-tg
       HealthCheckIntervalSeconds: 30
-      HealthCheckPath: "/"
+      HealthCheckPath: "/health_check/"
       Port: 80
       Protocol: "HTTP"
       HealthCheckPort: "traffic-port"
