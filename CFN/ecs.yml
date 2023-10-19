@@ -335,7 +335,7 @@ Resources:
         - !Ref SecurityGroup
       Subnets:
         - !Ref PrivateSubnet1
-        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
       Type: application
 
 
