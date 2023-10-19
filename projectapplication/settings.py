@@ -28,6 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['*',]
 
 
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -40,6 +41,7 @@ INSTALLED_APPS = [
 
     # Custom Apps
     'LoggingApp',
+    'health_check',
 ]
 
 MIDDLEWARE = [

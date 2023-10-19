@@ -20,4 +20,5 @@ from LoggingApp import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("login_view/", include("LoggingApp.urls")),
+    path('health_check/', include('health_check.urls')),
 ]
