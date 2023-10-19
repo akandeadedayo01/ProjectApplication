@@ -159,7 +159,7 @@ Resources:
                     "ContainerPort": "${ContainerPort}"
                   }
 
-                TemplatePath: source-output-artifacts::CFN-CICD/02-04-Fargate-ServiceStack-Create-ECSService.yml
+                TemplatePath: source-output-artifacts::CFN-CICD/ecs.yml
               RunOrder: 1
 
 
