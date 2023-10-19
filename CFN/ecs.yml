@@ -36,6 +36,16 @@ Parameters:
     Type: String
     Default: 10.192.21.0/24
 
+  ContainerPort:
+    Type: Number
+    Description: Choose the container port
+    Default: 8000
+
+  ImageUrl:
+    Type: String
+    Description: The url of a docker image that contains the application
+    Default:
+
 Resources:
   VPC:
     Type: AWS::EC2::VPC
@@ -286,12 +296,12 @@ Resources:
         Memory: 512
         ContainerDefinitions:
           - Name: projectapplication
-            Image: 447827107758.dkr.ecr.eu-west-1.amazonaws.com/projectapplication
+            Image: !Ref ImageUrl
             Essential: true
             NetworkMode: awsvpc
             ExecutionRoleArn: !GetAtt 'ECSTaskExecutionRole.Arn'
             PortMappings:
-              - ContainerPort: 8000
+              - ContainerPort: !Ref ContainerPort
                 Protocol: tcp
             LogConfiguration:
                 LogDriver: awslogs
@@ -313,8 +323,8 @@ Resources:
           ToPort: 80
           CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
-          FromPort: 8000
-          ToPort: 8000
+          FromPort: !Ref ContainerPort
+          ToPort: !Ref ContainerPort
           CidrIp: 0.0.0.0/0
       SecurityGroupEgress:
         - IpProtocol: -1
