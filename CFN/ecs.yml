@@ -313,16 +313,17 @@ Resources:
       VpcId: !Ref VPC
       SecurityGroupIngress:
         - IpProtocol: tcp
-          FromPort: 80
-          ToPort: 80
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
           FromPort: !Ref ContainerPort
           ToPort: !Ref ContainerPort
-          CidrIp: 0.0.0.0/0
+          CidrIp: 10.192.20.0/24
+        - IpProtocol: tcp
+            FromPort: !Ref ContainerPort
+            ToPort: !Ref ContainerPort
+            CidrIp: 10.192.21.0/24
       SecurityGroupEgress:
         - IpProtocol: -1
           CidrIp: 0.0.0.0/0
+
 
   Applicationlb:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
@@ -331,11 +332,25 @@ Resources:
       Name: PA-Alb
       Scheme: internal
       SecurityGroups:
-        - !Ref SecurityGroup
+        - !Ref ApplicationlbSecurityGroup
       Subnets:
-        - !Ref PrivateSubnet1
-        - !Ref PrivateSubnet2
+        - !Ref PublicSubnet1
+        - !Ref PublicSubnet2
       Type: application
+
+  ApplicationlbSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: This allows Loadbalancer on port 80 and Container port
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
 
   # Target Group
   TargetGroup:
