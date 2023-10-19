@@ -279,8 +279,8 @@ Resources:
         - FARGATE
         - FARGATE_SPOT
       ClusterSettings:
-        - Name: ContainerInsights
-          Value: Enabled
+        - Name: containerInsights
+          Value: enabled
 
 
   ECSTaskDefinition:
