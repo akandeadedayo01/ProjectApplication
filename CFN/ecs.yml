@@ -387,21 +387,11 @@ Resources:
           Subnets:
             - !Ref PrivateSubnet1
             - !Ref PrivateSubnet2
-      TaskDefinition: !Ref TaskDefinition
+      TaskDefinition: !Ref ECSTaskDefinition
       LoadBalancers:
         - ContainerName: PA-Service-container
           ContainerPort: !Ref 'ContainerPort'
           TargetGroupArn: !Ref 'TargetGroup'
-
-
-
-
-
-
-
-
-
-
 
 Outputs:
   VPC:
