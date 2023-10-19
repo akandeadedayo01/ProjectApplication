@@ -368,6 +368,33 @@ Resources:
       Protocol: HTTP
 
 
+  ECSService:
+    Type: AWS::ECS::Service
+    DependsOn: ApplicationLbListener
+    Properties:
+      ServiceName: PA-Service
+      Cluster: !Ref ECSCluster
+      LaunchType: FARGATE
+      HealthCheckGracePeriodSeconds: 147
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 75
+      DesiredCount: 1
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          SecurityGroups: [!Ref SecurityGroup]
+          Subnets:
+            - !Ref PrivateSubnet1
+            - !Ref PrivateSubnet2
+      TaskDefinition: !Ref TaskDefinition
+      LoadBalancers:
+        - ContainerName: PA-Service-container
+          ContainerPort: !Ref 'ContainerPort'
+          TargetGroupArn: !Ref 'TargetGroup'
+
+
+
 
 
 
