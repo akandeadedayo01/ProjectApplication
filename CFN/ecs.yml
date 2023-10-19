@@ -330,7 +330,7 @@ Resources:
     Properties:
       IpAddressType: ipv4
       Name: PA-Alb
-      Scheme: internal
+      Scheme: internet-facing
       SecurityGroups:
         - !Ref ApplicationlbSecurityGroup
       Subnets:
