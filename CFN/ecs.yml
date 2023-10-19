@@ -389,7 +389,7 @@ Resources:
             - !Ref PrivateSubnet2
       TaskDefinition: !Ref ECSTaskDefinition
       LoadBalancers:
-        - ContainerName: PA-Service
+        - ContainerName: projectapplication
           ContainerPort: !Ref 'ContainerPort'
           TargetGroupArn: !Ref 'TargetGroup'
 
