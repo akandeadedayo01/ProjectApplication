@@ -289,12 +289,12 @@ Resources:
         Family: projectapplication-task
         Cpu: 256
         Memory: 512
+        ExecutionRoleArn: !GetAtt 'ECSTaskExecutionRole.Arn'
         ContainerDefinitions:
           - Name: projectapplication
             Image: !Ref ImageUrl
             Essential: true
             NetworkMode: awsvpc
-            ExecutionRoleArn: !GetAtt 'ECSTaskExecutionRole.Arn'
             PortMappings:
               - ContainerPort: !Ref ContainerPort
                 Protocol: tcp
