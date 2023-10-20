@@ -360,7 +360,7 @@ Resources:
         - IpProtocol: -1
           CidrIp: 0.0.0.0/0
 
-   Target Group
+   # Target Group
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
