@@ -397,7 +397,7 @@ Resources:
         - TargetGroupArn: !Ref TargetGroup
           Type: 'forward'
       LoadBalancerArn: !Ref Alb
-      ListenerArn: !GetAtt 'AlbListener.Arn'
+      ListenerArn: !Ref AlbListener
 
   ECSService:
     Type: AWS::ECS::Service
