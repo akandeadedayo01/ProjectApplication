@@ -352,61 +352,61 @@ Resources:
         - IpProtocol: -1
           CidrIp: 0.0.0.0/0
 
-  # Target Group
-  TargetGroup:
-    Type: AWS::ElasticLoadBalancingV2::TargetGroup
-    Properties:
-      Name: PA-tg
-      HealthCheckIntervalSeconds: 30
-      HealthCheckPath: "/health_check/"
-      Port: 80
-      Protocol: "HTTP"
-      HealthCheckPort: "traffic-port"
-      HealthCheckProtocol: "HTTP"
-      HealthCheckTimeoutSeconds: 5
-      UnhealthyThresholdCount: 2
-      TargetType: "ip"
-      Matcher:
-        HttpCode: "200"
-      HealthyThresholdCount: 5
-      VpcId: !Ref VPC
-
-  # Service Listener
-  AlbListener:
-    Type: AWS::ElasticLoadBalancingV2::Listener
-    Properties:
-      DefaultActions:
-        - TargetGroupArn: !Ref TargetGroup
-          Type: 'forward'
-      LoadBalancerArn: !Ref Alb
-      Port: 80
-      Protocol: HTTP
-
-
-  ECSService:
-    Type: AWS::ECS::Service
-    DependsOn: AlbListener
-    Properties:
-      ServiceName: PA-Service
-      Cluster: !Ref ECSCluster
-      LaunchType: FARGATE
-      HealthCheckGracePeriodSeconds: 147
-      DeploymentConfiguration:
-        MaximumPercent: 200
-        MinimumHealthyPercent: 75
-      DesiredCount: 1
-      NetworkConfiguration:
-        AwsvpcConfiguration:
-          AssignPublicIp: DISABLED
-          SecurityGroups: [!Ref SecurityGroup]
-          Subnets:
-            - !Ref PrivateSubnet1
-            - !Ref PrivateSubnet2
-      TaskDefinition: !Ref ECSTaskDefinition
-      LoadBalancers:
-        - ContainerName: projectapplication
-          ContainerPort: !Ref 'ContainerPort'
-          TargetGroupArn: !Ref 'TargetGroup'
+#  # Target Group
+#  TargetGroup:
+#    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+#    Properties:
+#      Name: PA-tg
+#      HealthCheckIntervalSeconds: 30
+#      HealthCheckPath: "/health_check/"
+#      Port: 80
+#      Protocol: "HTTP"
+#      HealthCheckPort: "traffic-port"
+#      HealthCheckProtocol: "HTTP"
+#      HealthCheckTimeoutSeconds: 5
+#      UnhealthyThresholdCount: 2
+#      TargetType: "ip"
+#      Matcher:
+#        HttpCode: "200"
+#      HealthyThresholdCount: 5
+#      VpcId: !Ref VPC
+#
+#  # Service Listener
+#  AlbListener:
+#    Type: AWS::ElasticLoadBalancingV2::Listener
+#    Properties:
+#      DefaultActions:
+#        - TargetGroupArn: !Ref TargetGroup
+#          Type: 'forward'
+#      LoadBalancerArn: !Ref Alb
+#      Port: 80
+#      Protocol: HTTP
+#
+#
+#  ECSService:
+#    Type: AWS::ECS::Service
+#    DependsOn: AlbListener
+#    Properties:
+#      ServiceName: PA-Service
+#      Cluster: !Ref ECSCluster
+#      LaunchType: FARGATE
+#      HealthCheckGracePeriodSeconds: 147
+#      DeploymentConfiguration:
+#        MaximumPercent: 200
+#        MinimumHealthyPercent: 75
+#      DesiredCount: 1
+#      NetworkConfiguration:
+#        AwsvpcConfiguration:
+#          AssignPublicIp: DISABLED
+#          SecurityGroups: [!Ref SecurityGroup]
+#          Subnets:
+#            - !Ref PrivateSubnet1
+#            - !Ref PrivateSubnet2
+#      TaskDefinition: !Ref ECSTaskDefinition
+#      LoadBalancers:
+#        - ContainerName: projectapplication
+#          ContainerPort: !Ref 'ContainerPort'
+#          TargetGroupArn: !Ref 'TargetGroup'
 
 Outputs:
   VPC:
