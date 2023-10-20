@@ -390,39 +390,39 @@ Resources:
       Port: 80
       Protocol: HTTP
 
-#  AlbListenerRule:
-#    Type: AWS::ElasticLoadBalancingV2::ListenerRule
-#    Properties:
-#      Actions:
-#        - TargetGroupArn: !Ref TargetGroup
-#          Type: 'forward'
-#      ListenerArn: !GetAtt 'AlbListener.Arn'
-#      Priority: 1
-#
-#  ECSService:
-#    Type: AWS::ECS::Service
-#    DependsOn: AlbListenerRule
-#    Properties:
-#      ServiceName: PA-Service
-#      Cluster: !Ref ECSCluster
-#      LaunchType: FARGATE
-#      HealthCheckGracePeriodSeconds: 147
-#      DeploymentConfiguration:
-#        MaximumPercent: 200
-#        MinimumHealthyPercent: 75
-#      DesiredCount: 1
-#      NetworkConfiguration:
-#        AwsvpcConfiguration:
-#          AssignPublicIp: DISABLED
-#          SecurityGroups: [!Ref SecurityGroup]
-#          Subnets:
-#            - !Ref PrivateSubnet1
-#            - !Ref PrivateSubnet2
-#      TaskDefinition: !Ref ECSTaskDefinition
-#      LoadBalancers:
-#        - ContainerName: projectapplication
-#          ContainerPort: !Ref 'ContainerPort'
-#          TargetGroupArn: !Ref 'TargetGroup'
+  AlbListenerRule:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      Actions:
+        - TargetGroupArn: !Ref TargetGroup
+          Type: 'forward'
+      ListenerArn: !GetAtt 'AlbListener.Arn'
+      Priority: 1
+
+  ECSService:
+    Type: AWS::ECS::Service
+    DependsOn: AlbListenerRule
+    Properties:
+      ServiceName: PA-Service
+      Cluster: !Ref ECSCluster
+      LaunchType: FARGATE
+      HealthCheckGracePeriodSeconds: 147
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 75
+      DesiredCount: 1
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          SecurityGroups: [!Ref SecurityGroup]
+          Subnets:
+            - !Ref PrivateSubnet1
+            - !Ref PrivateSubnet2
+      TaskDefinition: !Ref ECSTaskDefinition
+      LoadBalancers:
+        - ContainerName: projectapplication
+          ContainerPort: !Ref 'ContainerPort'
+          TargetGroupArn: !Ref 'TargetGroup'
 
 Outputs:
   VPC:
