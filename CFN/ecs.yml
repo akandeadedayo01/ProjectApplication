@@ -309,7 +309,7 @@ Resources:
   SecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: This allows Loadbalancer on port 80 and Container port
+      GroupDescription: This allows Container port
       VpcId: !Ref VPC
       SecurityGroupIngress:
         - IpProtocol: tcp
@@ -325,23 +325,23 @@ Resources:
           CidrIp: 0.0.0.0/0
 
 
-  Applicationlb:
+  Alb:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
       IpAddressType: ipv4
-      Name: PA-Alb
+      Name: Project-Alb
       Scheme: internet-facing
       SecurityGroups:
-        - !Ref ApplicationlbSecurityGroup
+        - !Ref AlbSecurityGroup
       Subnets:
         - !Ref PublicSubnet1
         - !Ref PublicSubnet2
       Type: application
 
-  ApplicationlbSecurityGroup:
+  AlbSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: This allows Loadbalancer on port 80 and Container port
+      GroupDescription: This allows Loadbalancer on port 80
       VpcId: !Ref VPC
       SecurityGroupIngress:
         - IpProtocol: tcp
@@ -372,20 +372,20 @@ Resources:
       VpcId: !Ref VPC
 
   # Service Listener
-  ApplicationLbListener:
+  AlbListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
       DefaultActions:
         - TargetGroupArn: !Ref TargetGroup
           Type: 'forward'
-      LoadBalancerArn: !Ref Applicationlb
+      LoadBalancerArn: !Ref Alb
       Port: 80
       Protocol: HTTP
 
 
   ECSService:
     Type: AWS::ECS::Service
-    DependsOn: ApplicationLbListener
+    DependsOn: AlbListener
     Properties:
       ServiceName: PA-Service
       Cluster: !Ref ECSCluster
