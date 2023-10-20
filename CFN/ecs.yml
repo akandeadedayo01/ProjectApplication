@@ -397,6 +397,9 @@ Resources:
         - TargetGroupArn: !Ref TargetGroup
           Type: 'forward'
       ListenerArn: !Ref AlbListener
+      Conditions:
+        - Field: path-pattern
+          Values: '*'
       Priority: 1
 
   ECSService:
