@@ -396,7 +396,7 @@ Resources:
       Actions:
         - TargetGroupArn: !Ref TargetGroup
           Type: 'forward'
-      ListenerArn: !GetAtt 'AlbListener.Arn'
+      ListenerArn: !Ref AlbListener
       Priority: 1
 
   ECSService:
