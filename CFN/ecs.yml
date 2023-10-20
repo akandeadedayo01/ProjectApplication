@@ -320,6 +320,14 @@ Resources:
           FromPort: !Ref ContainerPort
           ToPort: !Ref ContainerPort
           CidrIp: 10.192.21.0/24
+        - IpProtocol: http
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 10.192.20.0/24
+        - IpProtocol: http
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 10.192.21.0/24
       SecurityGroupEgress:
         - IpProtocol: -1
           CidrIp: 0.0.0.0/0
@@ -358,10 +366,10 @@ Resources:
     Properties:
       Name: PA-tg
       HealthCheckIntervalSeconds: 30
-      HealthCheckPath: "/health_check/"
-      Port: 80
+      HealthCheckPath: "/health_check"
+      Port: 8000
       Protocol: "HTTP"
-      HealthCheckPort: "traffic-port"
+      HealthCheckPort: 8000
       HealthCheckProtocol: "HTTP"
       HealthCheckTimeoutSeconds: 5
       UnhealthyThresholdCount: 2
