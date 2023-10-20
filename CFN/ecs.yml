@@ -317,9 +317,9 @@ Resources:
           ToPort: !Ref ContainerPort
           CidrIp: 10.192.20.0/24
         - IpProtocol: tcp
-            FromPort: !Ref ContainerPort
-            ToPort: !Ref ContainerPort
-            CidrIp: 10.192.21.0/24
+          FromPort: !Ref ContainerPort
+          ToPort: !Ref ContainerPort
+          CidrIp: 10.192.21.0/24
       SecurityGroupEgress:
         - IpProtocol: -1
           CidrIp: 0.0.0.0/0
