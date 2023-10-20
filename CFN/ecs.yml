@@ -41,6 +41,11 @@ Parameters:
     Description: Choose the container port
     Default: 8000
 
+  Path:
+    Type: String
+    Default: "*"
+    Description: A path on the public loadbalancer
+
   ImageUrl:
     Type: String
     Description: The url of a docker image that contains the application
@@ -399,7 +404,7 @@ Resources:
       ListenerArn: !Ref AlbListener
       Conditions:
         - Field: path-pattern
-          Values: ['*']
+          Values: [!Ref 'Path']
       Priority: 1
 
   ECSService:
