@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description:  This template deploys a VPC, with a pair of public and private subnets spread
   across two Availability Zones. It deploys an internet gateway, with a default
-  route on the public subnets. It deploys a pair of NAT gateways (one in each AZ),
+  route on the public subnets. It deploys a single NAT gateways and EIP,
   and default routes for them in the private subnets.
 
 
@@ -411,7 +411,7 @@ Resources:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
       HealthCheckIntervalSeconds: 6
-      HealthCheckPath: /health_check
+      HealthCheckPath: /health_check/
       HealthCheckProtocol: HTTP
       HealthCheckTimeoutSeconds: 5
       HealthyThresholdCount: 2
