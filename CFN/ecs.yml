@@ -283,7 +283,6 @@ Resources:
         - Name: containerInsights
           Value: enabled
 
-
   ECSTaskDefinition:
       Type: 'AWS::ECS::TaskDefinition'
       Properties:
@@ -309,30 +308,30 @@ Resources:
 
   FargateContainerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
-      Properties:
-        GroupDescription: Access to the Fargate containers
-        VpcId: !Ref 'VPC'
-      EcsSecurityGroupIngressFromPublicALB:
-        Type: AWS::EC2::SecurityGroupIngress
-        Properties:
-          Description: Ingress from the public ALB
-          GroupId: !Ref 'FargateContainerSecurityGroup'
-          IpProtocol: -1
-          SourceSecurityGroupId: !Ref 'PublicLoadBalancerSG'
-      EcsSecurityGroupIngressFromPrivateALB:
-        Type: AWS::EC2::SecurityGroupIngress
-        Properties:
-          Description: Ingress from the private ALB
-          GroupId: !Ref 'FargateContainerSecurityGroup'
-          IpProtocol: -1
-          SourceSecurityGroupId: !Ref 'PrivateLoadBalancerSG'
-      EcsSecurityGroupIngressFromSelf:
-        Type: AWS::EC2::SecurityGroupIngress
-        Properties:
-          Description: Ingress from other containers in the same security group
-          GroupId: !Ref 'FargateContainerSecurityGroup'
-          IpProtocol: -1
-          SourceSecurityGroupId: !Ref 'FargateContainerSecurityGroup'
+    Properties:
+      GroupDescription: Access to the Fargate containers
+      VpcId: !Ref 'VPC'
+  EcsSecurityGroupIngressFromPublicALB:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: Ingress from the public ALB
+      GroupId: !Ref 'FargateContainerSecurityGroup'
+      IpProtocol: -1
+      SourceSecurityGroupId: !Ref 'PublicLoadBalancerSG'
+  EcsSecurityGroupIngressFromPrivateALB:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: Ingress from the private ALB
+      GroupId: !Ref 'FargateContainerSecurityGroup'
+      IpProtocol: -1
+      SourceSecurityGroupId: !Ref 'PrivateLoadBalancerSG'
+  EcsSecurityGroupIngressFromSelf:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: Ingress from other containers in the same security group
+      GroupId: !Ref 'FargateContainerSecurityGroup'
+      IpProtocol: -1
+      SourceSecurityGroupId: !Ref 'FargateContainerSecurityGroup'
 
   PublicLoadBalancerSG:
     Type: AWS::EC2::SecurityGroup
@@ -353,8 +352,7 @@ Resources:
         Subnets:
           # The load balancer is placed into the public subnets, so that traffic
           # from the internet can reach the load balancer directly via the internet gateway
-          - !Ref PublicSubnetOne
-          - !Ref PublicSubnetTwo
+          - !Ref PublicSubnet1
         SecurityGroups: [ !Ref 'PublicLoadBalancerSG' ]
     # A dummy target group is used to setup the ALB to just drop traffic
     # initially, before any real service target groups have been added.
