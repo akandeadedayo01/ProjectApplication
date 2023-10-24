@@ -7,19 +7,6 @@ Description: This stack deploys a Fargate cluster that is in a VPC with both
   the private subnet, which can be used for private internal traffic
   between internal services.
 Mappings:
-  # Hard values for the subnet masks. These masks define
-  # the range of internal IP addresses that can be assigned.
-  # The VPC can have all IP's from 10.0.0.0 to 10.0.255.255
-  # There are four subnets which cover the ranges:
-  #
-  # 10.0.0.0 - 10.0.0.255
-  # 10.0.1.0 - 10.0.1.255
-  # 10.0.2.0 - 10.0.2.255
-  # 10.0.3.0 - 10.0.3.255
-  #
-  # If you need more IP addresses (perhaps you have so many
-  # instances that you run out) then you can customize these
-  # ranges to add more
   SubnetConfig:
     VPC:
       CIDR: '10.0.0.0/16'
@@ -32,10 +19,6 @@ Mappings:
     PrivateTwo:
       CIDR: '10.0.3.0/24'
 Resources:
-  # VPC in which containers will be networked.
-  # It has two public subnets, and two private subnets.
-  # We distribute the subnets across the first two available subnets
-  # for the region, for high availability.
   VPC:
     Type: AWS::EC2::VPC
     Properties:
@@ -178,22 +161,22 @@ Resources:
   # If a container needs to access DynamoDB this allows a container in the private subnet
   # to talk to DynamoDB directly without needing to go via the NAT gateway. This reduces
   # the amount of bandwidth through the gateway, meaning that the gateway is free to serve
-#  # your other traffic.
-#  DynamoDBEndpoint:
-#    Type: AWS::EC2::VPCEndpoint
-#    Properties:
-#      PolicyDocument:
-#        Version: "2012-10-17"
-#        Statement:
-#          - Effect: Allow
-#            Action: "*"
-#            Principal: "*"
-#            Resource: "*"
-#      RouteTableIds:
-#        - !Ref 'PrivateRouteTableOne'
-#        - !Ref 'PrivateRouteTableTwo'
-#      ServiceName: !Join [ "", [ "com.amazonaws.", { "Ref": "AWS::Region" }, ".dynamodb" ] ]
-#      VpcId: !Ref 'VPC'
+  # your other traffic.
+  DynamoDBEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action: "*"
+            Principal: "*"
+            Resource: "*"
+      RouteTableIds:
+        - !Ref 'PrivateRouteTableOne'
+        - !Ref 'PrivateRouteTableTwo'
+      ServiceName: !Join [ "", [ "com.amazonaws.", { "Ref": "AWS::Region" }, ".dynamodb" ] ]
+      VpcId: !Ref 'VPC'
 
   # ECS Resources
   ECSCluster:
@@ -298,57 +281,57 @@ Resources:
   # An internal load balancer, this would be used for a service that is not
   # directly accessible to the public, but instead should only receive traffic
   # from your other services.
-#  PrivateLoadBalancerSG:
-#    Type: AWS::EC2::SecurityGroup
-#    Properties:
-#      GroupDescription: Access to the internal load balancer
-#      VpcId: !Ref 'VPC'
-#  PrivateLoadBalancerIngressFromECS:
-#    Type: AWS::EC2::SecurityGroupIngress
-#    Properties:
-#      Description: Only accept traffic from a container in the fargate container security group
-#      GroupId: !Ref 'PrivateLoadBalancerSG'
-#      IpProtocol: -1
-#      SourceSecurityGroupId: !Ref 'FargateContainerSecurityGroup'
-#  PrivateLoadBalancer:
-#    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-#    Properties:
-#      Scheme: internal
-#      LoadBalancerAttributes:
-#        - Key: idle_timeout.timeout_seconds
-#          Value: '30'
-#      Subnets:
-#        # This load balancer is put into the private subnet, so that there is no
-#        # route for the public to even be able to access the private load balancer.
-#        - !Ref PrivateSubnetOne
-#        - !Ref PrivateSubnetTwo
-#      SecurityGroups: [!Ref 'PrivateLoadBalancerSG']
-#  # This dummy target group is used to setup the ALB to just drop traffic
-#  # initially, before any real service target groups have been added.
-#  DummyTargetGroupPrivate:
-#    Type: AWS::ElasticLoadBalancingV2::TargetGroup
-#    Properties:
-#      HealthCheckIntervalSeconds: 6
-#      HealthCheckPath: /
-#      HealthCheckProtocol: HTTP
-#      HealthCheckTimeoutSeconds: 5
-#      HealthyThresholdCount: 2
-#      Name: !Join ['-', [!Ref 'AWS::StackName', 'drop-2']]
-#      Port: 80
-#      Protocol: HTTP
-#      UnhealthyThresholdCount: 2
-#      VpcId: !Ref 'VPC'
-#  PrivateLoadBalancerListener:
-#    Type: AWS::ElasticLoadBalancingV2::Listener
-#    DependsOn:
-#      - PrivateLoadBalancer
-#    Properties:
-#      DefaultActions:
-#        - TargetGroupArn: !Ref 'DummyTargetGroupPrivate'
-#          Type: 'forward'
-#      LoadBalancerArn: !Ref 'PrivateLoadBalancer'
-#      Port: 80
-#      Protocol: HTTP
+  PrivateLoadBalancerSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Access to the internal load balancer
+      VpcId: !Ref 'VPC'
+  PrivateLoadBalancerIngressFromECS:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: Only accept traffic from a container in the fargate container security group
+      GroupId: !Ref 'PrivateLoadBalancerSG'
+      IpProtocol: -1
+      SourceSecurityGroupId: !Ref 'FargateContainerSecurityGroup'
+  PrivateLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Scheme: internal
+      LoadBalancerAttributes:
+        - Key: idle_timeout.timeout_seconds
+          Value: '30'
+      Subnets:
+        # This load balancer is put into the private subnet, so that there is no
+        # route for the public to even be able to access the private load balancer.
+        - !Ref PrivateSubnetOne
+        - !Ref PrivateSubnetTwo
+      SecurityGroups: [!Ref 'PrivateLoadBalancerSG']
+  # This dummy target group is used to setup the ALB to just drop traffic
+  # initially, before any real service target groups have been added.
+  DummyTargetGroupPrivate:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckIntervalSeconds: 6
+      HealthCheckPath: /
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 2
+      Name: !Join ['-', [!Ref 'AWS::StackName', 'drop-2']]
+      Port: 80
+      Protocol: HTTP
+      UnhealthyThresholdCount: 2
+      VpcId: !Ref 'VPC'
+  PrivateLoadBalancerListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    DependsOn:
+      - PrivateLoadBalancer
+    Properties:
+      DefaultActions:
+        - TargetGroupArn: !Ref 'DummyTargetGroupPrivate'
+          Type: 'forward'
+      LoadBalancerArn: !Ref 'PrivateLoadBalancer'
+      Port: 80
+      Protocol: HTTP
 
   # This is an IAM role which authorizes ECS to manage resources on your
   # account on your behalf, such as updating your load balancer with the
