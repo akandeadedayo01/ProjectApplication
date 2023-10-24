@@ -342,23 +342,23 @@ Resources:
         # Allow access to ALB from anywhere on the internet
         - CidrIp: 0.0.0.0/0
           IpProtocol: -1
-    PublicLoadBalancer:
-      Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-      Properties:
-        Scheme: internet-facing
-        LoadBalancerAttributes:
-          - Key: idle_timeout.timeout_seconds
-            Value: '30'
-        Subnets:
+  PublicLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Scheme: internet-facing
+      LoadBalancerAttributes:
+        - Key: idle_timeout.timeout_seconds
+          Value: '30'
+      Subnets:
           # The load balancer is placed into the public subnets, so that traffic
           # from the internet can reach the load balancer directly via the internet gateway
-          - !Ref PublicSubnet1
-        SecurityGroups: [ !Ref 'PublicLoadBalancerSG' ]
+        - !Ref PublicSubnet1
+      SecurityGroups: [ !Ref 'PublicLoadBalancerSG' ]
     # A dummy target group is used to setup the ALB to just drop traffic
     # initially, before any real service target groups have been added.
-    DummyTargetGroupPublic:
-      Type: AWS::ElasticLoadBalancingV2::TargetGroup
-      Properties:
+  DummyTargetGroupPublic:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
         HealthCheckIntervalSeconds: 6
         HealthCheckPath: /
         HealthCheckProtocol: HTTP
@@ -369,7 +369,7 @@ Resources:
         Protocol: HTTP
         UnhealthyThresholdCount: 2
         VpcId: !Ref 'VPC'
-    PublicLoadBalancerListener:
+  PublicLoadBalancerListener:
       Type: AWS::ElasticLoadBalancingV2::Listener
       DependsOn:
         - PublicLoadBalancer
