@@ -425,8 +425,8 @@ Resources:
         Conditions:
           - Field: path-pattern
             Values: [ !Ref 'Path' ]
-        ListenerArn: !Ref PublicListener
-        Priority: !Ref 'Priority'
+        ListenerArn: !Ref PublicLoadBalancerListener
+        Priority: 1
 
 
 Outputs:
