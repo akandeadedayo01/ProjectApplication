@@ -52,8 +52,8 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_URL }} #OPTIONAL
 
-  BUILD_AND_PUBLISH:
-    needs: Testing
+  PUBLISH:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Code checkout
