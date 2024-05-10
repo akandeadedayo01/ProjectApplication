@@ -2,15 +2,13 @@ FROM python:3-alpine
 
 WORKDIR /projectapplication
 
-ADD . /projectapplication
+COPY . .
 
 EXPOSE 8000
 
-COPY requirements.txt /projectapplication/
+COPY requirements.txt .
 
 RUN pip3 install -r requirements.txt --no-cache-dir
-
-COPY . /projectapplication
 
 ENTRYPOINT ["python3"]
 
