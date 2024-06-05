@@ -1,14 +1,15 @@
 AWSTemplateFormatVersion: 2010-09-09
 
-Description:  This template deploys a VPC, with a pair of public subnets spread
+Description: >
+  This template deploys a VPC, with a pair of public subnets spread
   across two Availability Zones. It deploys an internet gateway, with a default
-  route on the public subnets. It deploys Ec2, Keypair and Userdata script
+  route on the public subnets. It deploys Ec2 and Userdata script.
 
 Parameters:
   EnvironmentName:
     Description: An environment name that is prefixed to resource names
     Type: String
-    Default: Sandbox
+    Default: MyVPC
 
   VpcCIDR:
     Description: Please enter the IP range (CIDR notation) for this VPC
@@ -25,14 +26,13 @@ Parameters:
     Type: String
     Default: 10.0.64.0/18
 
-
 Resources:
   myVPC:
     Type: AWS::EC2::VPC
     Properties:
       CidrBlock: !Ref VpcCIDR
-      EnableDnsSupport: 'true'
-      EnableDnsHostnames: 'true'
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
       Tags:
         - Key: Name
           Value: !Ref EnvironmentName
@@ -65,13 +65,12 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref myVPC
-      AvailabilityZone: !Select [ 1, !GetAZs  '' ]
+      AvailabilityZone: !Select [ 1, !GetAZs '' ]
       CidrBlock: !Ref PublicSubnet2CIDR
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
           Value: !Sub ${EnvironmentName} Public Subnet (AZ2)
-
 
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
@@ -101,13 +100,6 @@ Resources:
       RouteTableId: !Ref PublicRouteTable
       SubnetId: !Ref PublicSubnet2
 
-  EC2KeyPair:
-    Type: AWS::EC2::KeyPair
-    Properties:
-      KeyFormat: pem
-      KeyName: appmigro
-      KeyType: rsa
-
   EC2InstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -122,46 +114,32 @@ Resources:
           FromPort: 22
           ToPort: 22
           CidrIp: 0.0.0.0/0
-      SecurityGroupEgress:
-        - IpProtocol: tcp
-          FromPort: 8000
-          ToPort: 8000
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
-          FromPort: 22
-          ToPort: 22
-          CidrIp: 0.0.0.0/0
-
 
   EC2Instance:
-    DependsOn: EC2KeyPair
     Type: AWS::EC2::Instance
     Properties:
-      ImageId: ami-08f32efd140b7d89f
+      ImageId: ami-04fe22dfadec6f0b6
       InstanceType: t2.micro
       KeyName: appmigro
       SubnetId: !Ref PublicSubnet1
       SecurityGroupIds:
-          - !Ref EC2InstanceSecurityGroup
+        - !Ref EC2InstanceSecurityGroup
       UserData:
         Fn::Base64:
           !Sub |
-          #!/bin/bash
-          sudo yum update -y
-          sudo yum install git -y
-          sudo git clone https://github.com/appmigro01/ProjectApplication.git
-          cd ProjectApplication
-          sudo git config --global --add safe.directory /home/ec2-user/ProjectApplication
-          sudo git checkout origin/docker
-          sudo yum install -y yum-utils
-          sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-          sudo yum install docker -y
-          sudo systemctl start docker
-          sudo docker build -t projectapplication .
-          sudo docker run -p 8000:8000 projectapplication
-
-
-      # Add Data in the ec2
+            #!/bin/bash
+            sudo yum update -y
+            sudo yum install git -y
+            sudo git clone https://github.com/appmigro01/ProjectApplication.git
+            cd ProjectApplication
+            sudo git config --global --add safe.directory /home/ec2-user/ProjectApplication
+            sudo git checkout origin/docker
+            sudo yum install -y yum-utils
+            sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+            sudo yum install docker -y
+            sudo systemctl start docker
+            sudo docker build -t projectapplication .
+            sudo docker run -p 8000:8000 projectapplication
 
 Outputs:
   VPC:
